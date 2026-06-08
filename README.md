@@ -3,7 +3,7 @@
 Date: 2026-06-08  
 Repository: OerseKippies/procurementManagement  
 Module code: procM  
-Status: **Complete Architecture + Runtime MVP**  
+Status: **Complete Business Edition**  
 Governance: OK-Core
 
 ## Purpose
@@ -22,8 +22,10 @@ python run.py
 ## Tests
 
 ```bash
-python -m pytest tests/ -v
+python -m pytest tests/ -v --cov=procm
 ```
+
+27 tests — MVP + business edition (monitoring, forecasts, reports, invoice import).
 
 ## Seed data
 

@@ -9,7 +9,7 @@ from flask import Flask
 from procm import config
 from procm.db import get_connection, init_db
 from procm.routes import bp
-from procm.seed import seed_if_empty
+from procm.seed import seed_business_extensions, seed_if_empty
 
 
 def create_app(test_config: dict | None = None) -> Flask:
@@ -25,6 +25,7 @@ def create_app(test_config: dict | None = None) -> Flask:
     conn = get_connection(config.DATABASE_PATH)
     try:
         seed_if_empty(conn)
+        seed_business_extensions(conn)
         conn.commit()
     finally:
         conn.close()

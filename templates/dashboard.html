@@ -9,6 +9,17 @@
   <div class="stat"><strong>{{ stats.suggestions }}</strong> open adviezen</div>
   <div class="stat"><strong>{{ stats.imports }}</strong> URL imports</div>
   <div class="stat"><strong>{{ stats.recipes }}</strong> recepten</div>
+  <div class="stat"><strong>{{ stats.watches }}</strong> watches</div>
+  <div class="stat"><strong>{{ stats.alerts }}</strong> alerts</div>
+</div>
+<h3>Prijsbewegingen (watchlist)</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+  <div><h4>Stijgingen</h4>
+    <ul>{% for w in increases %}<li>{{ w.supplier_product_name }}: +{{ '%.1f'|format(w.change_percent) }}%</li>{% else %}<li>Geen</li>{% endfor %}</ul>
+  </div>
+  <div><h4>Dalingen</h4>
+    <ul>{% for w in drops %}<li>{{ w.supplier_product_name }}: {{ '%.1f'|format(w.change_percent) }}%</li>{% else %}<li>Geen</li>{% endfor %}</ul>
+  </div>
 </div>
 <h3>Recente inkoopadviezen</h3>
 <table>

@@ -71,5 +71,7 @@ def price_summary(conn: sqlite3.Connection, supplier_product_id: int) -> dict[st
         "difference": diff,
         "lowest": min(prices),
         "highest": max(prices),
+        "average": sum(prices) / len(prices),
         "last_checked": rows[0]["recorded_date"],
+        "history": [dict(r) for r in rows],
     }

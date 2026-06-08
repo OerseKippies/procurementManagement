@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Repack Builder{% endblock %}
+{% block content %}
+<h2>Repack builder</h2>
+<form method="post" class="card">
+  <label>Naam</label><input name="name" required placeholder="Start & Grow 25kg → 2kg">
+  <label>Bulk product</label><select name="input_supplier_product_id" required>{% for p in products %}<option value="{{ p.id }}">{{ p.supplier_product_name }} (€{{ p.current_price }})</option>{% endfor %}</select>
+  <label>Input hoeveelheid</label><input name="input_quantity" type="number" step="0.01" value="25">
+  <label>Input eenheid</label><input name="input_unit" value="kg">
+  <label>Verpakking €</label><input name="packaging_cost" type="number" step="0.01" value="1">
+  <label>Label €</label><input name="label_cost" type="number" step="0.01" value="0.15">
+  <label>Arbeid €</label><input name="labor_cost" type="number" step="0.01" value="2.5">
+  <h4>Outputs (500g, 1kg, 2kg)</h4>
+  <input name="output_quantity" value="0.5" type="number" step="0.01"> <input name="output_unit" value="kg"> <input name="suggested_sale_price" placeholder="verkoop €" type="number" step="0.01">
+  <input name="output_quantity" value="1" type="number" step="0.01"> <input name="output_unit" value="kg"> <input name="suggested_sale_price" type="number" step="0.01">
+  <input name="output_quantity" value="2" type="number" step="0.01"> <input name="output_unit" value="kg"> <input name="suggested_sale_price" type="number" step="0.01">
+  <button type="submit">Repack opslaan</button>
+</form>
+{% endblock %}

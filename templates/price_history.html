@@ -18,7 +18,21 @@
   <div class="stat"><strong>€{{ '%.2f'|format(summary.difference or 0) }}</strong> verschil</div>
   <div class="stat"><strong>€{{ '%.2f'|format(summary.lowest or 0) }}</strong> laagste</div>
   <div class="stat"><strong>€{{ '%.2f'|format(summary.highest or 0) }}</strong> hoogste</div>
+  <div class="stat"><strong>€{{ '%.2f'|format(summary.average or 0) }}</strong> gemiddeld</div>
 </div>
+{% if summary.history %}
+<h3>Prijsverloop</h3>
+<div class="card">
+  {% set maxp = summary.highest or 1 %}
+  {% for h in summary.history[:20]|reverse %}
+  <div style="margin:4px 0;display:flex;align-items:center;gap:8px">
+    <span style="width:90px;font-size:0.85rem">{{ h.recorded_date[:10] }}</span>
+    <div style="background:#1f4d3a;height:18px;width:{{ (h.unit_price / maxp * 200)|int }}px"></div>
+    <span>€{{ '%.2f'|format(h.unit_price) }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 <table>
   <tr><th>Datum</th><th>Prijs</th><th>Effectief/eenheid</th><th>Bron</th></tr>
   {% for h in history %}

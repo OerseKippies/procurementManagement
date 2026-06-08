@@ -334,9 +334,12 @@ def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
 
 
 def init_db(db_path: Path | None = None) -> None:
+    from procm.migrations import run_migrations
+
     conn = get_connection(db_path)
     try:
         conn.executescript(SCHEMA_SQL)
+        run_migrations(conn)
         conn.commit()
     finally:
         conn.close()

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Purchasing{% endblock %}
+{% block content %}
+<h2>Inkoop</h2>
+<p><a href="{{ url_for('main.purchase_orders') }}">Nieuwe inkooporder</a> · <a href="{{ url_for('main.receipts_list') }}">Ontvangsten</a></p>
+<table>
+  <tr><th>#</th><th>Leverancier</th><th>Datum</th><th>Status</th><th>Totaal</th></tr>
+  {% for o in orders %}
+  <tr><td>{{ o.id }}</td><td>{{ o.supplier_name }}</td><td>{{ o.order_date }}</td><td>{{ o.status }}</td><td>€{{ '%.2f'|format(o.total or 0) }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

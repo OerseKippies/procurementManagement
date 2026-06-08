@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Recipe Builder{% endblock %}
+{% block content %}
+<h2>Recept builder</h2>
+<form method="post" class="card">
+  <label>Naam</label><input name="name" required>
+  <label>Batch grootte</label><input name="batch_size" type="number" step="0.01" value="10">
+  <label>Output eenheid</label><input name="output_unit" value="kg">
+  <h4>Componenten</h4>
+  {% for i in range(4) %}
+  <label>Component {{ i+1 }}</label>
+  <input name="component_name" placeholder="naam">
+  <select name="component_product_id"><option value="">— handmatig —</option>{% for p in products %}<option value="{{ p.id }}">{{ p.supplier_product_name }}</option>{% endfor %}</select>
+  <input name="component_qty" type="number" step="0.01" placeholder="qty">
+  <input name="component_unit" placeholder="eenheid" value="kg">
+  <input name="component_cost" type="number" step="0.01" placeholder="kost/eenheid">
+  {% endfor %}
+  <button type="submit">Recept opslaan &amp; kost berekenen</button>
+</form>
+{% endblock %}

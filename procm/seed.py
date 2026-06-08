@@ -151,6 +151,112 @@ def seed_if_empty(conn: sqlite3.Connection) -> bool:
         "INSERT INTO settings (key, value) VALUES ('default_margin_percent', '30')"
     )
     conn.execute(
-        "INSERT INTO settings (key, value) VALUES ('seed_version', '1')"
+        "INSERT INTO settings (key, value) VALUES ('seed_version', '2-business')"
+    )
+    seed_business_extensions(conn)
+    return True
+
+
+def seed_business_extensions(conn: sqlite3.Connection) -> bool:
+    """Canonical products, watches, forecasts — runs once per database."""
+    row = conn.execute(
+        "SELECT value FROM settings WHERE key = 'business_seed'"
+    ).fetchone()
+    if row:
+        return False
+
+    canonical = [
+        ("Havens Start & Grow", "Kuikenvoer start/grow", "feed"),
+        ("Legkorrel", "Legkorrel leghennen", "feed"),
+        ("Gemengd Graan", "Graanmix", "feed"),
+        ("Maagkiezel", "Maagkiezel fijn/grof", "supplement"),
+        ("Meelwormen", "Gedroogde meelwormen", "treat"),
+    ]
+    canon_ids: dict[str, int] = {}
+    for name, desc, cat in canonical:
+        cur = conn.execute(
+            "INSERT OR IGNORE INTO canonical_products (name, description, category) VALUES (?, ?, ?)",
+            (name, desc, cat),
+        )
+        if cur.lastrowid:
+            canon_ids[name] = cur.lastrowid
+        else:
+            rid = conn.execute(
+                "SELECT id FROM canonical_products WHERE name = ?", (name,)
+            ).fetchone()
+            canon_ids[name] = rid["id"]
+
+    links = [
+        ("Havens Start & Grow Korrel 25 kg", "Havens Start & Grow"),
+        ("Havens Start & Grow Meel 25 kg", "Havens Start & Grow"),
+        ("Fuite Pluimvee Legkorrel 20 kg", "Legkorrel"),
+        ("Gemengd Graan 25 kg", "Gemengd Graan"),
+        ("Maagkiezel fijn 25 kg", "Maagkiezel"),
+        ("Meelwormen 5 liter", "Meelwormen"),
+    ]
+    for prod_name, canon_name in links:
+        if canon_name in canon_ids:
+            conn.execute(
+                """
+                UPDATE supplier_products SET canonical_product_id = ?, canonical_name = ?
+                WHERE supplier_product_name = ?
+                """,
+                (canon_ids[canon_name], canon_name, prod_name),
+            )
+
+    feed_id = conn.execute(
+        "SELECT id FROM supplier_products WHERE supplier_product_name LIKE 'Havens Start%Korrel%' LIMIT 1"
+    ).fetchone()
+    if feed_id:
+        conn.execute(
+            """
+            INSERT INTO supplier_watches (supplier_product_id, last_price, active)
+            SELECT id, current_price, 1 FROM supplier_products WHERE id = ?
+            """,
+            (feed_id["id"],),
+        )
+        conn.execute(
+            """
+            INSERT INTO forecast_profiles (supplier_product_id, current_planning_qty, safety_days, lead_time_days)
+            VALUES (?, 8, 7, 5)
+            """,
+            (feed_id["id"],),
+        )
+        conn.execute(
+            """
+            INSERT INTO consumption_profiles (supplier_product_id, avg_daily_consumption, unit)
+            VALUES (?, 1.5, 'kg')
+            """,
+            (feed_id["id"],),
+        )
+        conn.execute(
+            """
+            INSERT INTO price_alerts (supplier_product_id, alert_type, threshold_price, status)
+            VALUES (?, 'maximum', 20.00, 'active')
+            """,
+            (feed_id["id"],),
+        )
+
+    extra_repack = conn.execute(
+        "SELECT id FROM supplier_products WHERE supplier_product_name = 'Havens Start & Grow Korrel 25 kg'"
+    ).fetchone()
+    if extra_repack and not conn.execute(
+        "SELECT id FROM repack_recipes WHERE name LIKE '%1 kg%'"
+    ).fetchone():
+        rcur = conn.execute(
+            """
+            INSERT INTO repack_recipes (
+                name, input_supplier_product_id, input_quantity, input_unit, packaging_cost, label_cost, labor_cost
+            ) VALUES ('Start & Grow 25 kg naar 1 kg zakken', ?, 25, 'kg', 0.90, 0.12, 2.00)
+            """,
+            (extra_repack["id"],),
+        )
+        conn.execute(
+            "INSERT INTO repack_outputs (repack_recipe_id, output_quantity, output_unit, suggested_sale_price) VALUES (?, 1, 'kg', 3.25)",
+            (rcur.lastrowid,),
+        )
+
+    conn.execute(
+        "INSERT INTO settings (key, value) VALUES ('business_seed', '1')"
     )
     return True

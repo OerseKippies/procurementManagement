@@ -1,7 +1,7 @@
 # procurementManagement Architecture
 
 Date: 2026-06-08  
-Status: Production-Ready Architecture Foundation  
+Status: Complete Business Edition (Flask + SQLite runtime)  
 Module code: procM
 
 ## Vision
@@ -40,16 +40,23 @@ Versio target (PHP 8.3, MariaDB 10.6)
 Design for runtime without redesign
 ```
 
-## Component map (planned runtime)
+## Runtime (delivered)
 
 ```text
-procM API
-procM MariaDB schema
-ImportJob processor (future — not implemented in foundation)
-CostCalculation service
-RecipeCost / RepackCost calculators
-PurchaseSuggestion engine
+Flask web app (run.py) — port 5010
+SQLite (data/procm.sqlite3) + migrations v2-business
+URL intake (procm/intake.py)
+Monitoring, forecasts, reports (procm/business_routes.py)
+Services: pricing, cost, recipe, repack, suggestions, invoice_import
+pytest suite (27 tests)
+```
+
+## Deferred
+
+```text
+MariaDB / Versio deploy
 commL contract registry
+copM procurement workspace consumer
 ```
 
 ## Boundaries

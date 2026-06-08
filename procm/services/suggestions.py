@@ -70,3 +70,67 @@ def generate_suggestion(
         "supplier_name": product["supplier_name"],
         "product_name": product["supplier_product_name"],
     }
+
+
+def generate_suggestion_enhanced(conn: sqlite3.Connection, supplier_product_id: int) -> dict[str, Any]:
+    """Suggestion using forecast profile and cheapest supplier for canonical product."""
+    from procm.services.forecast import compute_forecast
+
+    forecast = compute_forecast(conn, supplier_product_id)
+    product = conn.execute(
+        "SELECT * FROM supplier_products WHERE id = ?", (supplier_product_id,)
+    ).fetchone()
+    preferred_supplier_id = None
+    if product and product["canonical_product_id"]:
+        best = conn.execute(
+            """
+            SELECT sp.id, sp.supplier_id, sp.current_price, s.name
+            FROM supplier_products sp
+            JOIN suppliers s ON s.id = sp.supplier_id
+            WHERE sp.canonical_product_id = ? AND sp.active = 1 AND sp.current_price IS NOT NULL
+            ORDER BY sp.current_price ASC LIMIT 1
+            """,
+            (product["canonical_product_id"],),
+        ).fetchone()
+        if best:
+            supplier_product_id = best["id"]
+            preferred_supplier_id = best["supplier_id"]
+
+    qty = 0
+    reason_parts = []
+    if forecast.get("reorder_in_days") is not None and forecast["reorder_in_days"] <= 0:
+        daily = forecast.get("avg_daily_consumption") or 1
+        qty = max(1, int(daily * (forecast["lead_time_days"] + forecast["safety_days"])))
+        if forecast.get("days_remaining") is not None:
+            reason_parts.append(f"Forecast: {forecast['days_remaining']:.1f} dagen resterend")
+    if not qty:
+        return generate_suggestion(
+            conn,
+            supplier_product_id,
+            current_quantity=forecast.get("current_planning_qty") or 0,
+            minimum_desired=2,
+            usage_per_week=(forecast.get("avg_daily_consumption") or 0) * 7,
+        )
+    prod = conn.execute(
+        """
+        SELECT sp.*, s.name AS supplier_name FROM supplier_products sp
+        JOIN suppliers s ON s.id = sp.supplier_id WHERE sp.id = ?
+        """,
+        (supplier_product_id,),
+    ).fetchone()
+    sid = preferred_supplier_id or prod["supplier_id"]
+    reason = "; ".join(reason_parts) + f" — voorkeur leverancier op prijs."
+    cur = conn.execute(
+        """
+        INSERT INTO purchase_suggestions (supplier_product_id, supplier_id, suggested_quantity, reason, priority)
+        VALUES (?, ?, ?, ?, 'high')
+        """,
+        (supplier_product_id, sid, qty, reason),
+    )
+    return {
+        "suggestion_id": cur.lastrowid,
+        "suggested_quantity": qty,
+        "reason": reason,
+        "supplier_name": prod["supplier_name"],
+        "product_name": prod["supplier_product_name"],
+    }

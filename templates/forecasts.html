@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Forecasts{% endblock %}
+{% block content %}
+<h2>Forecast &amp; reorder</h2>
+<form method="get" class="card">
+  <label>Product</label>
+  <select name="product_id" onchange="this.form.submit()">
+    <option value="">— kies —</option>
+    {% for p in products %}<option value="{{ p.id }}" {% if product_id == p.id %}selected{% endif %}>{{ p.supplier_product_name }}</option>{% endfor %}
+  </select>
+</form>
+{% if product_id %}
+<form method="post" class="card">
+  <input type="hidden" name="action" value="profile">
+  <input type="hidden" name="supplier_product_id" value="{{ product_id }}">
+  <label>Planning hoeveelheid (niet voorraad)</label><input name="current_planning_qty" type="number" step="0.01" value="{{ forecast.current_planning_qty if forecast else 0 }}">
+  <label>Veiligheidsdagen</label><input name="safety_days" type="number" value="{{ forecast.safety_days if forecast else 7 }}">
+  <label>Lead time (dagen)</label><input name="lead_time_days" type="number" value="{{ forecast.lead_time_days if forecast else 7 }}">
+  <label>Voorkeur leverancier</label><select name="preferred_supplier_id"><option value="">—</option>{% for s in suppliers %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select>
+  <button type="submit">Profiel opslaan</button>
+</form>
+<form method="post" style="display:inline">
+  <input type="hidden" name="action" value="suggest">
+  <input type="hidden" name="supplier_product_id" value="{{ product_id }}">
+  <button type="submit">Genereer inkoopadvies</button>
+</form>
+{% endif %}
+{% if forecast %}
+<div class="card">
+  <p><strong>{{ forecast.product_name }}</strong> — {{ forecast.supplier_name }}</p>
+  <p>Gem. verbruik/dag: {{ '%.2f'|format(forecast.avg_daily_consumption) }}</p>
+  <p>Dagen resterend: {% if forecast.days_remaining is not none %}{{ '%.1f'|format(forecast.days_remaining) }}{% else %}—{% endif %}</p>
+  <p>Herbesteldatum: {{ forecast.reorder_date or '—' }}</p>
+</div>
+{% endif %}
+{% endblock %}

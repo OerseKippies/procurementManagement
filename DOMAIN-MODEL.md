@@ -78,6 +78,19 @@ Status: Production-Ready Architecture Foundation
 | SuggestionRule | rule_id | Rule definition |
 | ProcurementRecommendation | recommendation_id | Legacy alias / aggregate view |
 
+### Business edition — monitoring & planning
+
+| Entity | PK | Purpose |
+|---|---|---|
+| CanonicalProduct | id | Normalized product across suppliers |
+| SupplierWatch | id | Watched URL / price monitoring |
+| PriceAlert | id | Target or maximum price alert |
+| ConsumptionEvent | id | purchased / consumed / repacked (planning) |
+| ConsumptionProfile | id | Avg daily consumption |
+| ForecastProfile | id | Planning qty, lead time, safety days |
+| InvoiceImport | id | CSV/Excel import batch |
+| InvoiceImportLine | id | Imported invoice line |
+
 ## Reference fields (not owned)
 
 | Field | Source |

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Monitoring{% endblock %}
+{% block content %}
+<h2>Leveranciers monitoring</h2>
+<div class="stats">
+  <div class="stat"><strong>{{ increases|length }}</strong> prijsstijgingen</div>
+  <div class="stat"><strong>{{ drops|length }}</strong> prijsdalingen</div>
+</div>
+<h3>Watchlist</h3>
+<form method="post" class="card">
+  <input type="hidden" name="action" value="add_watch">
+  <label>Product</label>
+  <select name="supplier_product_id" required>{% for p in products %}<option value="{{ p.id }}">{{ p.supplier_product_name }}</option>{% endfor %}</select>
+  <button type="submit">Toevoegen aan watch</button>
+</form>
+<table>
+  <tr><th>Product</th><th>Leverancier</th><th>Laatste prijs</th><th>Vorige</th><th>Δ%</th><th></th></tr>
+  {% for w in watches %}
+  <tr>
+    <td>{{ w.supplier_product_name }}</td><td>{{ w.supplier_name }}</td>
+    <td>€{{ w.last_price or '—' }}</td><td>€{{ w.previous_price or '—' }}</td>
+    <td>{% if w.change_percent %}{{ '%.1f'|format(w.change_percent) }}%{% else %}—{% endif %}</td>
+    <td><form method="post"><input type="hidden" name="action" value="refresh"><input type="hidden" name="watch_id" value="{{ w.id }}"><button type="submit">Refresh</button></form></td>
+  </tr>
+  {% endfor %}
+</table>
+<h3>Price alerts</h3>
+<form method="post" class="card">
+  <input type="hidden" name="action" value="add_alert">
+  <label>Product</label><select name="supplier_product_id">{% for p in products %}<option value="{{ p.id }}">{{ p.supplier_product_name }}</option>{% endfor %}</select>
+  <label>Type</label><select name="alert_type"><option value="target">target (≤ drempel)</option><option value="maximum">maximum (≥ drempel)</option></select>
+  <label>Drempelprijs €</label><input name="threshold_price" type="number" step="0.01" required>
+  <button type="submit">Alert aanmaken</button>
+</form>
+<table>
+  <tr><th>Product</th><th>Type</th><th>Drempel</th><th>Status</th><th></th></tr>
+  {% for a in alerts %}
+  <tr>
+    <td>{{ a.supplier_product_name }}</td><td>{{ a.alert_type }}</td><td>€{{ a.threshold_price }}</td><td>{{ a.status }}</td>
+    <td>{% if a.status == 'triggered' %}<form method="post"><input type="hidden" name="action" value="dismiss_alert"><input type="hidden" name="alert_id" value="{{ a.id }}"><button type="submit">Dismiss</button></form>{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

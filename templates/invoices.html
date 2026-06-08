@@ -2,6 +2,7 @@
 {% block title %}Invoices{% endblock %}
 {% block content %}
 <h2>Inkoopfacturen</h2>
+<p><a href="{{ url_for('main.invoice_import_page') }}">CSV / Excel import</a></p>
 <form method="post" class="card">
   <label>Leverancier</label><select name="supplier_id" required>{% for s in suppliers %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select>
   <label>Factuurnummer</label><input name="invoice_number" required>

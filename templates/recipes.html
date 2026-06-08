@@ -2,6 +2,7 @@
 {% block title %}Recipes{% endblock %}
 {% block content %}
 <h2>Recepten</h2>
+<p><a href="{{ url_for('main.recipe_builder') }}">+ Nieuw recept (builder)</a></p>
 <table>
   <tr><th>Recept</th><th>Batch</th><th>Laatste batchkost</th><th>Per eenheid</th><th></th></tr>
   {% for r in recipes %}

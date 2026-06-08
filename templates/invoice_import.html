@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Invoice Import{% endblock %}
+{% block content %}
+<h2>Factuur import (CSV / Excel)</h2>
+<p>Kolommen: supplier_product_id of sku of product, quantity, unit_price, line_total (optioneel)</p>
+<form method="post" enctype="multipart/form-data" class="card">
+  <label>Leverancier</label><select name="supplier_id"><option value="">—</option>{% for s in suppliers %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select>
+  <label>CSV plakken</label><textarea name="csv_text" rows="5" placeholder="sku,quantity,unit_price&#10;HAV-SG-KOR-25,4,18.95"></textarea>
+  <label>Of bestand (.csv / .xlsx)</label><input type="file" name="file" accept=".csv,.xlsx,.xls">
+  <button type="submit">Importeren</button>
+</form>
+<table>
+  <tr><th>ID</th><th>Type</th><th>Bestand</th><th>Regels</th><th>Datum</th></tr>
+  {% for i in imports %}
+  <tr><td>{{ i.id }}</td><td>{{ i.source_type }}</td><td>{{ i.source_filename or '—' }}</td><td>{{ i.line_count }}</td><td>{{ i.imported_at }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

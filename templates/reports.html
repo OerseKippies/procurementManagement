@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h2>Rapporten &amp; export</h2>
+<table>
+  <tr><th>Rapport</th><th>CSV</th><th>Excel</th></tr>
+  <tr><td>Inkoophistorie</td><td><a href="{{ url_for('main.reports_export', report_type='purchases', format='csv') }}">Download</a></td><td><a href="{{ url_for('main.reports_export', report_type='purchases', format='xlsx') }}">Download</a></td></tr>
+  <tr><td>Leverancier / prijshistorie</td><td><a href="{{ url_for('main.reports_export', report_type='suppliers', format='csv') }}">Download</a></td><td><a href="{{ url_for('main.reports_export', report_type='suppliers', format='xlsx') }}">Download</a></td></tr>
+  <tr><td>Recept kosthistorie</td><td><a href="{{ url_for('main.reports_export', report_type='recipes', format='csv') }}">Download</a></td><td><a href="{{ url_for('main.reports_export', report_type='recipes', format='xlsx') }}">Download</a></td></tr>
+  <tr><td>Repack historie</td><td><a href="{{ url_for('main.reports_export', report_type='repack', format='csv') }}">Download</a></td><td><a href="{{ url_for('main.reports_export', report_type='repack', format='xlsx') }}">Download</a></td></tr>
+</table>
+{% endblock %}

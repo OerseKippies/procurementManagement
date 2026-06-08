@@ -18,18 +18,21 @@ bp = Blueprint("main", __name__)
 NAV = [
     ("dashboard", "Dashboard"),
     ("suppliers_list", "Suppliers"),
-    ("products_list", "Supplier Products"),
+    ("products_list", "Products"),
     ("url_intake", "URL Intake"),
     ("price_history", "Price History"),
-    ("purchase_orders", "Purchase Orders"),
-    ("receipts_list", "Receipts"),
+    ("purchasing_hub", "Purchasing"),
     ("invoices_list", "Invoices"),
+    ("invoice_import_page", "Invoice Import"),
+    ("monitoring", "Monitoring"),
+    ("canonical_products", "Canonical"),
+    ("consumption", "Consumption"),
+    ("forecasts", "Forecasts"),
     ("recipes_list", "Recipes"),
     ("repack_list", "Repack"),
     ("cost_calculator", "Cost Calculator"),
-    ("suggestions_list", "Purchase Suggestions"),
-    ("matching_list", "Product Matching"),
-    ("intelligence", "Supplier Intelligence"),
+    ("suggestions_list", "Suggestions"),
+    ("reports", "Reports"),
     ("settings_page", "Settings"),
 ]
 
@@ -41,6 +44,8 @@ def inject_nav():
 
 @bp.route("/")
 def dashboard():
+    from procm.services.monitoring import dashboard_price_moves
+
     with db_conn() as conn:
         stats = {
             "suppliers": conn.execute("SELECT COUNT(*) c FROM suppliers").fetchone()["c"],
@@ -51,6 +56,8 @@ def dashboard():
             ).fetchone()["c"],
             "imports": conn.execute("SELECT COUNT(*) c FROM import_jobs").fetchone()["c"],
             "recipes": conn.execute("SELECT COUNT(*) c FROM recipes").fetchone()["c"],
+            "watches": conn.execute("SELECT COUNT(*) c FROM supplier_watches WHERE active=1").fetchone()["c"],
+            "alerts": conn.execute("SELECT COUNT(*) c FROM price_alerts WHERE status='triggered'").fetchone()["c"],
         }
         recent = conn.execute(
             """
@@ -61,7 +68,10 @@ def dashboard():
             ORDER BY ps.created_at DESC LIMIT 5
             """
         ).fetchall()
-    return render_template("dashboard.html", stats=stats, recent=recent)
+        moves = dashboard_price_moves(conn)
+    return render_template(
+        "dashboard.html", stats=stats, recent=recent, increases=moves["increases"], drops=moves["drops"]
+    )
 
 
 @bp.route("/suppliers", methods=["GET", "POST"])
@@ -575,4 +585,9 @@ def settings_page():
 
 @bp.route("/health")
 def health():
-    return {"status": "ok", "module": "procM"}
+    return {"status": "ok", "module": "procM", "edition": "business"}
+
+
+from procm.business_routes import register_business_routes  # noqa: E402
+
+register_business_routes(bp)

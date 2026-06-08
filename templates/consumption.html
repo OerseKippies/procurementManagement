@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Consumption{% endblock %}
+{% block content %}
+<h2>Verbruik (planning — geen voorraad)</h2>
+<form method="post" class="card">
+  <label>Product</label><select name="supplier_product_id" required>{% for p in products %}<option value="{{ p.id }}">{{ p.supplier_product_name }} ({{ p.supplier_name }})</option>{% endfor %}</select>
+  <label>Type</label><select name="event_type"><option value="purchased">ingekocht</option><option value="consumed">verbruikt</option><option value="repacked">herverpakt</option></select>
+  <label>Hoeveelheid</label><input name="quantity" type="number" step="0.01" required>
+  <label>Eenheid</label><input name="unit" value="kg">
+  <label>Notities</label><input name="notes">
+  <button type="submit">Registreren</button>
+</form>
+<table>
+  <tr><th>Datum</th><th>Product</th><th>Type</th><th>Aantal</th></tr>
+  {% for e in events %}
+  <tr><td>{{ e.event_date }}</td><td>{{ e.supplier_product_name }}</td><td>{{ e.event_type }}</td><td>{{ e.quantity }} {{ e.unit }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
