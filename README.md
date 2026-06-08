@@ -55,7 +55,18 @@ Supplier catalog, URL intake, price history, purchasing, cost/recipe/repack know
 
 Inventory, animals, breeds, ads, publications, sales accounting.
 
-## Environment
+## Production (Versio)
+
+URL: https://procm.oerse-kippies.nl/health
+
+```bash
+cp config/config.example.php config/config.php
+# Set database password (nol_module_procM) and api_key
+php scripts/migrate.php
+bash scripts/deploy_procm_versio.sh
+```
+
+## Environment (local Flask)
 
 | Variable | Default |
 |---|---|

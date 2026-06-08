@@ -12,14 +12,16 @@ Host: `nol@vserver423.axc.eu`
 | Method | `git clone` + `public_html/index.php` health stub |
 | Script | `scripts/deploy_procm_versio.sh` |
 
-## Health endpoint (when subdomain active)
+## Health endpoint
 
-`https://procm.oerse-kippies.nl/` → JSON `{"status":"deployed","module":"procM",...}`
+`https://procm.oerse-kippies.nl/health` → JSON status + database connection state
 
-## Blockers
+## Production setup (operator)
 
-1. **DNS/subdomain** — `procm.oerse-kippies.nl` not resolving (DirectAdmin subdomain registration required).
-2. **Flask runtime** — Versio host has Python 2.7 only; Flask app needs Python 3.10+ (local: `python run.py`).
+1. Copy `config/config.example.php` → `config/config.php`
+2. Set `database.password` and `api.api_key`
+3. Run `php scripts/migrate.php` on server
+4. Flask UI remains local (`python run.py`) until PHP API port or Python 3 on Versio
 
 ## Verify on server
 
