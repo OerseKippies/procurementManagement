@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Cost Calculator{% endblock %}
+{% block content %}
+<h2>Kostencalculator</h2>
+<form method="post" class="card">
+  {% for ct in component_types %}
+  <label>{{ ct.replace('_',' ').title() }} (EUR)</label>
+  <input name="amount_{{ ct }}" type="number" step="0.01" value="0">
+  {% endfor %}
+  <label>Aantal eenheden</label><input name="units" type="number" step="0.01" value="1">
+  <label>Marge %</label><input name="margin_percent" type="number" step="0.1" value="30">
+  <button type="submit">Bereken</button>
+</form>
+{% if result %}
+<div class="card">
+  <p>Totaal: <strong>€{{ '%.2f'|format(result.total_cost) }}</strong></p>
+  <p>Per eenheid: <strong>€{{ '%.2f'|format(result.unit_cost) }}</strong></p>
+  <p>Advies verkoop: <strong>€{{ '%.2f'|format(result.suggested_sale_price) }}</strong></p>
+  <p>Marge: €{{ '%.2f'|format(result.margin_euro) }} ({{ '%.1f'|format(result.margin_percent) }}%)</p>
+</div>
+{% endif %}
+{% endblock %}

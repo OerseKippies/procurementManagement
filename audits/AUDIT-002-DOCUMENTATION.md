@@ -34,9 +34,18 @@ Verify CCM-required documentation set exists and cross-references are consistent
 
 PASS
 
-## Reviews 001–005
+## Reviews 001–006
 
 PASS
+
+## Runtime handover
+
+| File | Present |
+|---|---|
+| handover/HANDOVER-PROCM-COMPLETE-MVP.md | PASS |
+| requirements.txt | PASS |
+| run.py | PASS |
+| tests/test_mvp.py | PASS |
 
 ## Gaps
 

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2>Dashboard</h2>
+<div class="stats">
+  <div class="stat"><strong>{{ stats.suppliers }}</strong> leveranciers</div>
+  <div class="stat"><strong>{{ stats.products }}</strong> producten</div>
+  <div class="stat"><strong>{{ stats.orders }}</strong> inkooporders</div>
+  <div class="stat"><strong>{{ stats.suggestions }}</strong> open adviezen</div>
+  <div class="stat"><strong>{{ stats.imports }}</strong> URL imports</div>
+  <div class="stat"><strong>{{ stats.recipes }}</strong> recepten</div>
+</div>
+<h3>Recente inkoopadviezen</h3>
+<table>
+  <tr><th>Product</th><th>Leverancier</th><th>Aantal</th><th>Reden</th></tr>
+  {% for r in recent %}
+  <tr>
+    <td>{{ r.supplier_product_name }}</td>
+    <td>{{ r.supplier_name }}</td>
+    <td>{{ r.suggested_quantity }}</td>
+    <td>{{ r.reason }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4">Nog geen adviezen — genereer via Purchase Suggestions.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

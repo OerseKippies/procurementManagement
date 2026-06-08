@@ -2,19 +2,24 @@
 
 Date: 2026-06-08
 
-## Phase 0 — Production-Ready Architecture Foundation (current)
+## Phase 0 — Architecture Foundation
 
-- Complete domain: URL intake, matching, intelligence, purchasing, price, cost, recipe, repack, suggestions
-- ADRs 0001–0008, reviews 001–005, audits 001–005
-- **Status: COMPLETE (foundation)**
+- **Status: COMPLETE**
 
-## Phase 1 — Core Runtime MVP
+## Phase 1 — Runtime MVP (current)
 
-- MariaDB schema (full entity catalog per DOMAIN-MODEL.md)
-- Health endpoint
-- Supplier + SupplierProduct + PO CRUD
-- POST /imports/url (manual fallback only — no scraper)
+- Flask + SQLite local app
+- All 13 operator screens
+- URL intake with fallback
+- Seed data, pytest 13/13
+- **Status: COMPLETE (local MVP)**
+
+## Phase 2 — Production Runtime
+
+- MariaDB schema on Versio
+- Health endpoint deployment
 - commL contract registration
+- Authentication
 
 ## Phase 2 — Price, Matching & Intelligence
 

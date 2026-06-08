@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Repack{% endblock %}
+{% block content %}
+<h2>Repack</h2>
+<table>
+  <tr><th>Naam</th><th>Input</th><th>Output</th><th>Kost/eenheid</th><th>Verkoopprijs</th><th></th></tr>
+  {% for r in repacks %}
+  <tr>
+    <td>{{ r.name }}</td>
+    <td>{{ r.input_quantity }} {{ r.input_unit }} — {{ r.supplier_product_name or '' }}</td>
+    <td>{{ r.output_quantity }} {{ r.output_unit }}</td>
+    <td>{% if r.last_unit_cost %}€{{ '%.2f'|format(r.last_unit_cost) }}{% else %}—{% endif %}</td>
+    <td>€{{ '%.2f'|format(r.suggested_sale_price or 0) }}</td>
+    <td><form method="post" action="{{ url_for('main.repack_calculate', repack_id=r.id) }}"><button type="submit">Bereken</button></form></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Product bewerken{% endblock %}
+{% block content %}
+<h2>Product bewerken</h2>
+<form method="post" class="card">
+  <label>Leverancier</label>
+  <select name="supplier_id" required>{% for s in suppliers %}<option value="{{ s.id }}" {% if s.id == product.supplier_id %}selected{% endif %}>{{ s.name }}</option>{% endfor %}</select>
+  <label>SKU</label><input name="supplier_sku" value="{{ product.supplier_sku or '' }}">
+  <label>Productnaam</label><input name="supplier_product_name" value="{{ product.supplier_product_name }}" required>
+  <label>Canonical name</label><input name="canonical_name" value="{{ product.canonical_name or '' }}">
+  <label>URL</label><input name="source_url" value="{{ product.source_url or '' }}">
+  <label>Verpakking</label><input name="package_size" type="number" step="0.01" value="{{ product.package_size or '' }}">
+  <label>Eenheid</label><input name="package_unit" value="{{ product.package_unit or '' }}">
+  <label>Prijs</label><input name="current_price" type="number" step="0.01" value="{{ product.current_price or '' }}">
+  <label>Valuta</label><input name="currency" value="{{ product.currency or 'EUR' }}">
+  <label>Afbeelding</label><input name="image_url" value="{{ product.image_url or '' }}">
+  <label>Notities</label><textarea name="notes" rows="2">{{ product.notes or '' }}</textarea>
+  <label><input type="checkbox" name="active" {% if product.active %}checked{% endif %}> Actief</label>
+  <button type="submit">Opslaan</button>
+</form>
+{% endblock %}

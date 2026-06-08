@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Supplier Intelligence{% endblock %}
+{% block content %}
+<h2>Leveranciersvergelijking</h2>
+<table>
+  <tr><th>Leverancier</th><th>Product</th><th>Verpakking</th><th>Prijs</th><th>€/eenheid</th><th>Verzend</th><th>Laatst</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.supplier_name }}</td><td>{{ r.supplier_product_name }}</td>
+    <td>{{ r.package_size or '' }} {{ r.package_unit or '' }}</td>
+    <td>€{{ '%.2f'|format(r.current_price or 0) }}</td>
+    <td>€{{ '%.4f'|format(r.effective_unit_cost or 0) }}</td>
+    <td>{{ r.shipping or 0 }}</td><td>{{ r.last_checked }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

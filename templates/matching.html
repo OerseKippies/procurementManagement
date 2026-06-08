@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Product Matching{% endblock %}
+{% block content %}
+<h2>Product matching</h2>
+<form method="post" class="card">
+  <label>Bronproduct</label><select name="source_id" required>{% for p in products %}<option value="{{ p.id }}">{{ p.supplier_product_name }}</option>{% endfor %}</select>
+  <label>Doelproduct</label><select name="target_id" required>{% for p in products %}<option value="{{ p.id }}">{{ p.supplier_product_name }}</option>{% endfor %}</select>
+  <label>Confidence (0-1)</label><input name="confidence" type="number" step="0.01" value="0.5">
+  <label>Beslissing</label>
+  <select name="decision"><option value="unknown">unknown</option><option value="same">same</option><option value="different">different</option></select>
+  <label>Notities</label><textarea name="notes" rows="2"></textarea>
+  <button type="submit">Match opslaan</button>
+</form>
+<table>
+  <tr><th>Bron</th><th>Doel</th><th>Confidence</th><th>Beslissing</th></tr>
+  {% for m in matches %}
+  <tr><td>{{ m.source_name }}</td><td>{{ m.target_name }}</td><td>{{ m.confidence }}</td><td>{{ m.decision }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

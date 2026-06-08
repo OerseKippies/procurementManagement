@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Supplier Products{% endblock %}
+{% block content %}
+<h2>Leveranciersproducten</h2>
+<form method="post" class="card">
+  <h3>Nieuw product</h3>
+  <label>Leverancier</label>
+  <select name="supplier_id" required>{% for s in suppliers %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select>
+  <label>SKU</label><input name="supplier_sku">
+  <label>Productnaam</label><input name="supplier_product_name" required>
+  <label>Canonical name</label><input name="canonical_name">
+  <label>URL</label><input name="source_url">
+  <label>Verpakking</label><input name="package_size" type="number" step="0.01">
+  <label>Eenheid</label><input name="package_unit" placeholder="kg">
+  <label>Prijs (EUR)</label><input name="current_price" type="number" step="0.01">
+  <label>Afbeelding URL</label><input name="image_url">
+  <label>Notities</label><textarea name="notes" rows="2"></textarea>
+  <label><input type="checkbox" name="active" checked> Actief</label>
+  <button type="submit">Opslaan</button>
+</form>
+<table>
+  <tr><th>Product</th><th>Leverancier</th><th>Prijs</th><th>Verpakking</th><th></th></tr>
+  {% for p in products %}
+  <tr>
+    <td>{{ p.supplier_product_name }}</td><td>{{ p.supplier_name }}</td>
+    <td>€{{ '%.2f'|format(p.current_price or 0) }}</td>
+    <td>{{ p.package_size or '' }} {{ p.package_unit or '' }}</td>
+    <td><a href="{{ url_for('main.product_edit', product_id=p.id) }}">Bewerken</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

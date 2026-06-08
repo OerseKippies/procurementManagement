@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Recipes{% endblock %}
+{% block content %}
+<h2>Recepten</h2>
+<table>
+  <tr><th>Recept</th><th>Batch</th><th>Laatste batchkost</th><th>Per eenheid</th><th></th></tr>
+  {% for r in recipes %}
+  <tr>
+    <td>{{ r.name }}</td><td>{{ r.batch_size }} {{ r.output_unit }}</td>
+    <td>{% if r.last_batch_cost %}€{{ '%.2f'|format(r.last_batch_cost) }}{% else %}—{% endif %}</td>
+    <td>{% if r.last_unit_cost %}€{{ '%.2f'|format(r.last_unit_cost) }}{% else %}—{% endif %}</td>
+    <td>
+      <form method="post" action="{{ url_for('main.recipe_calculate', version_id=r.version_id) }}">
+        <button type="submit">Bereken kost</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

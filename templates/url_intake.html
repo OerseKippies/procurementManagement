@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}URL Intake{% endblock %}
+{% block content %}
+<h2>URL Intake</h2>
+<form method="post" class="card">
+  <label>Leveranciers-URL (Teurlings, Plein, Bol, …)</label>
+  <input name="source_url" placeholder="https://..." required>
+  <button type="submit">Importeren</button>
+</form>
+{% if result %}
+<div class="card">
+  <h3>Resultaat job #{{ result.import_job_id }}</h3>
+  <p>Status: <strong>{{ result.status }}</strong></p>
+  {% if result.error_message %}<p>Fetch: {{ result.error_message }} — handmatig aanvullen mogelijk.</p>{% endif %}
+  <p>Product: {{ result.parsed.product_name }} — €{{ result.parsed.price or 'onbekend' }}</p>
+  <p><a href="{{ url_for('main.product_edit', product_id=result.supplier_product_id) }}">Product bewerken</a></p>
+</div>
+{% endif %}
+<h3>Recente imports</h3>
+<table>
+  <tr><th>ID</th><th>URL</th><th>Leverancier</th><th>Status</th><th>Product</th></tr>
+  {% for j in jobs %}
+  <tr>
+    <td>{{ j.id }}</td><td>{{ j.source_url[:60] }}…</td><td>{{ j.supplier_name }}</td><td>{{ j.status }}</td>
+    <td>{% if j.supplier_product_id %}<a href="{{ url_for('main.product_edit', product_id=j.supplier_product_id) }}">#{{ j.supplier_product_id }}</a>{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

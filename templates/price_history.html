@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Price History{% endblock %}
+{% block content %}
+<h2>Prijshistorie</h2>
+<form method="get" class="card">
+  <label>Product</label>
+  <select name="product_id" onchange="this.form.submit()">
+    <option value="">— kies —</option>
+    {% for p in products %}
+    <option value="{{ p.id }}" {% if product_id == p.id %}selected{% endif %}>{{ p.supplier_product_name }} ({{ p.supplier_name }})</option>
+    {% endfor %}
+  </select>
+</form>
+{% if summary %}
+<div class="stats">
+  <div class="stat"><strong>€{{ '%.2f'|format(summary.current or 0) }}</strong> huidig</div>
+  <div class="stat"><strong>€{{ '%.2f'|format(summary.previous or 0) }}</strong> vorig</div>
+  <div class="stat"><strong>€{{ '%.2f'|format(summary.difference or 0) }}</strong> verschil</div>
+  <div class="stat"><strong>€{{ '%.2f'|format(summary.lowest or 0) }}</strong> laagste</div>
+  <div class="stat"><strong>€{{ '%.2f'|format(summary.highest or 0) }}</strong> hoogste</div>
+</div>
+<table>
+  <tr><th>Datum</th><th>Prijs</th><th>Effectief/eenheid</th><th>Bron</th></tr>
+  {% for h in history %}
+  <tr><td>{{ h.recorded_date }}</td><td>€{{ '%.2f'|format(h.unit_price) }}</td><td>{{ h.effective_unit_cost }}</td><td>{{ h.source }}</td></tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Invoices{% endblock %}
+{% block content %}
+<h2>Inkoopfacturen</h2>
+<form method="post" class="card">
+  <label>Leverancier</label><select name="supplier_id" required>{% for s in suppliers %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select>
+  <label>Factuurnummer</label><input name="invoice_number" required>
+  <label>Product</label><select name="supplier_product_id" required>{% for p in products %}<option value="{{ p.id }}">{{ p.supplier_product_name }}</option>{% endfor %}</select>
+  <label>Aantal</label><input name="quantity" type="number" step="0.01" required>
+  <label>Stukprijs</label><input name="unit_price" type="number" step="0.01" required>
+  <label>Datum</label><input name="invoice_date" type="date">
+  <button type="submit">Factuur opslaan</button>
+</form>
+<table>
+  <tr><th>#</th><th>Leverancier</th><th>Factuur</th><th>Datum</th><th>Totaal</th></tr>
+  {% for i in invoices %}<tr><td>{{ i.id }}</td><td>{{ i.supplier_name }}</td><td>{{ i.invoice_number }}</td><td>{{ i.invoice_date }}</td><td>€{{ '%.2f'|format(i.invoice_total) }}</td></tr>{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Purchase Suggestions{% endblock %}
+{% block content %}
+<h2>Inkoopadviezen</h2>
+<form method="post" class="card">
+  <label>Product</label><select name="supplier_product_id" required>{% for p in products %}<option value="{{ p.id }}">{{ p.supplier_product_name }} ({{ p.supplier_name }})</option>{% endfor %}</select>
+  <label>Huidige voorraad (handmatig)</label><input name="current_quantity" type="number" step="0.01" value="1">
+  <label>Minimum gewenst</label><input name="minimum_desired" type="number" step="0.01" value="4">
+  <label>Verbruik per week</label><input name="usage_per_week" type="number" step="0.01" value="2">
+  <label>Lead time (weken)</label><input name="lead_time_weeks" type="number" step="0.1" value="1">
+  <label>Veiligheidsbuffer (weken)</label><input name="safety_buffer" type="number" step="0.1" value="1">
+  <button type="submit">Genereer advies</button>
+</form>
+<table>
+  <tr><th>Product</th><th>Leverancier</th><th>Aantal</th><th>Prioriteit</th><th>Reden</th></tr>
+  {% for s in suggestions %}
+  <tr><td>{{ s.supplier_product_name }}</td><td>{{ s.supplier_name }}</td><td>{{ s.suggested_quantity }}</td><td>{{ s.priority }}</td><td>{{ s.reason }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

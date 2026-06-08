@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Receipts{% endblock %}
+{% block content %}
+<h2>Ontvangsten</h2>
+<form method="post" class="card">
+  <label>Leverancier</label><select name="supplier_id" required>{% for s in suppliers %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select>
+  <label>PO id (optioneel)</label><input name="purchase_order_id">
+  <label>Product</label><select name="supplier_product_id" required>{% for p in products %}<option value="{{ p.id }}">{{ p.supplier_product_name }}</option>{% endfor %}</select>
+  <label>Aantal ontvangen</label><input name="quantity" type="number" step="0.01" required>
+  <label>Datum</label><input name="received_date" type="date">
+  <button type="submit">Registreren</button>
+</form>
+<table>
+  <tr><th>#</th><th>Leverancier</th><th>Datum</th><th>PO</th></tr>
+  {% for r in receipts %}<tr><td>{{ r.id }}</td><td>{{ r.supplier_name }}</td><td>{{ r.received_date }}</td><td>{{ r.purchase_order_id or '-' }}</td></tr>{% endfor %}
+</table>
+{% endblock %}

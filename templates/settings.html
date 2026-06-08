@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<h2>Instellingen</h2>
+<form method="post" class="card">
+  <label>Standaard marge %</label><input name="default_margin_percent" value="{{ settings.get('default_margin_percent', '30') }}">
+  <label>Bedrijfsnaam</label><input name="company_name" value="{{ settings.get('company_name', 'Oerse Kippies') }}">
+  <button type="submit">Opslaan</button>
+</form>
+<p>Database: <code>data/procm.sqlite3</code> (lokaal)</p>
+{% endblock %}
