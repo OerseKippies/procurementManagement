@@ -45,6 +45,73 @@ if ($path === '/health' || $path === '/') {
     exit;
 }
 
+if ($path === '/copilot/dashboard') {
+    $commitFile = procm_root_dir() . '/DEPLOY_COMMIT.txt';
+    $commit = is_file($commitFile) ? trim((string) file_get_contents($commitFile)) : 'unknown';
+    $dbStatus = 'not_configured';
+    $tables = 0;
+    $suggestions = [];
+    if (procm_config_loaded()) {
+        try {
+            $pdo = procm_pdo();
+            if ($pdo) {
+                $pdo->query('SELECT 1');
+                $dbStatus = 'connected';
+                $row = $pdo->query(
+                    "SELECT COUNT(*) AS c FROM information_schema.tables WHERE table_schema = DATABASE()"
+                )->fetch();
+                $tables = (int) ($row['c'] ?? 0);
+                if ($tables > 0) {
+                    $hasSuggestions = $pdo->query(
+                        "SELECT COUNT(*) AS c FROM information_schema.tables
+                         WHERE table_schema = DATABASE() AND table_name = 'purchase_suggestions'"
+                    )->fetch();
+                    if ((int) ($hasSuggestions['c'] ?? 0) > 0) {
+                        $stmt = $pdo->query(
+                            "SELECT ps.suggested_quantity, ps.reason, ps.priority,
+                                    sp.supplier_product_name AS product, s.name AS supplier
+                             FROM purchase_suggestions ps
+                             LEFT JOIN supplier_products sp ON sp.id = ps.supplier_product_id
+                             LEFT JOIN suppliers s ON s.id = ps.supplier_id
+                             WHERE ps.status = 'open'
+                             ORDER BY ps.created_at DESC
+                             LIMIT 20"
+                        );
+                        if ($stmt !== false) {
+                            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                                $suggestions[] = [
+                                    'product' => (string) ($row['product'] ?? $row['supplier'] ?? '—'),
+                                    'suggested_quantity' => (int) ($row['suggested_quantity'] ?? 0),
+                                    'reason' => (string) ($row['reason'] ?? ''),
+                                    'priority' => (string) ($row['priority'] ?? 'medium'),
+                                    'source' => 'procM',
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Throwable $e) {
+            $dbStatus = 'error';
+        }
+    }
+    procm_json_response([
+        'status' => 'ok',
+        'module' => 'procM',
+        'available' => $dbStatus === 'connected',
+        'database' => $dbStatus,
+        'table_count' => $tables,
+        'commit' => $commit,
+        'purchase_suggestions' => $suggestions,
+        'widgets' => [
+            'openSuggestions' => count($suggestions),
+            'tables' => $tables,
+        ],
+        'time' => gmdate('c'),
+    ]);
+    exit;
+}
+
 if (!procm_check_api_key()) {
     procm_json_response(['error' => 'unauthorized'], 401);
     exit;
