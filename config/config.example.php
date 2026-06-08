@@ -12,7 +12,7 @@ return [
     ],
     'database' => [
         'driver' => 'mysql',
-        'host' => '185.175.200.60',
+        'host' => 'localhost',
         'port' => 3306,
         'dbname' => 'nol_module_procM',
         'username' => 'nol_module_procM',
