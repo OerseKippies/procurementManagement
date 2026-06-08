@@ -1,75 +1,90 @@
 # DOMAIN-MODEL — procurementManagement
 
 Date: 2026-06-08  
-Status: Architecture Foundation
+Status: Production-Ready Architecture Foundation
 
-## Entity Catalog
+## Entity catalog
 
-| Entity | Primary key | Purpose |
+### Supplier domain
+
+| Entity | PK | Purpose |
 |---|---|---|
 | Supplier | supplier_id | Vendor master |
-| SupplierContact | contact_id | Supplier contacts |
-| SupplierProduct | supplier_product_id | Supplier SKU mapped to mdM catalog reference |
-| SupplierPrice | supplier_price_id | Point-in-time supplier price |
-| PriceHistory | price_history_id | Normalized cost history for analysis |
+| SupplierContact | contact_id | Contacts |
+| SupplierProduct | supplier_product_id | Supplier SKU + mdM ref |
+| SupplierProductImage | image_id | Image URLs from intake |
+| SupplierProductImport | import_id | Import attempt record |
+| SupplierProductSnapshot | snapshot_id | Point-in-time captured data |
+| SupplierPrice | supplier_price_id | Effective-dated price |
+| SupplierComparison | comparison_id | Computed comparison row |
+
+### Intake domain
+
+| Entity | PK | Purpose |
+|---|---|---|
+| ImportJob | import_job_id | URL intake job |
+| ImportedPage | page_id | Raw page metadata |
+
+### Matching domain
+
+| Entity | PK | Purpose |
+|---|---|---|
+| ProductMatch | match_id | Cross-supplier match candidate |
+| MatchDecision | decision_id | Confirmed/rejected match |
+| MatchRule | rule_id | Matching heuristics |
+
+### Purchasing domain
+
+| Entity | PK | Purpose |
+|---|---|---|
 | PurchaseOrder | purchase_order_id | Order header |
 | PurchaseOrderLine | line_id | Order line |
 | PurchaseReceipt | receipt_id | Goods received |
-| PurchaseReceiptLine | receipt_line_id | Received quantities |
+| PurchaseReceiptLine | receipt_line_id | Received qty |
 | PurchaseInvoice | invoice_id | Supplier invoice |
-| PurchaseInvoiceLine | invoice_line_id | Invoice lines |
-| ProcurementRecommendation | recommendation_id | Suggested purchase |
-| ProcurementRule | rule_id | Rule driving recommendations |
+| PurchaseInvoiceLine | invoice_line_id | Invoice line |
 
-## Supplier
+### Cost domain
 
-| Field | Type | Notes |
+| Entity | PK | Purpose |
 |---|---|---|
-| supplier_id | UUID | PK |
-| name | string | e.g. Teurlings, Havens, Bol |
-| status | enum | ACTIVE, INACTIVE, PREFERRED |
-| website | string | Optional |
-| notes | text | Operator notes |
+| CostModel | cost_model_id | Template (raw+pack+label+labor+ship) |
+| CostCalculation | calculation_id | Computed result |
+| CostComponent | component_id | Line in calculation |
+| PriceHistory | price_history_id | Analytical price series |
 
-## SupplierContact
+### Recipe domain
 
-| Field | Type | Notes |
+| Entity | PK | Purpose |
 |---|---|---|
-| contact_id | UUID | PK |
-| supplier_id | UUID | FK → Supplier |
-| name | string | |
-| email | string | |
-| phone | string | |
-| role | string | e.g. sales, support |
+| Recipe | recipe_id | e.g. VitalBoost, Verwennerij |
+| RecipeComponent | component_id | Ingredient line |
+| RecipeVersion | version_id | Versioned BOM |
+| RecipeCost | recipe_cost_id | Cost snapshot per version |
 
-## SupplierProduct
+### Repack domain
 
-See `SUPPLIER-PRODUCT-MODEL.md`.
+| Entity | PK | Purpose |
+|---|---|---|
+| RepackRecipe | repack_recipe_id | e.g. 25kg → 2kg bags |
+| RepackOutput | output_id | Output SKU/qty |
+| RepackCost | repack_cost_id | Cost snapshot |
 
-## SupplierPrice / PriceHistory
+### Suggestion domain
 
-See `PRICE-HISTORY-MODEL.md`.
+| Entity | PK | Purpose |
+|---|---|---|
+| PurchaseSuggestion | suggestion_id | Actionable advice |
+| SuggestionRule | rule_id | Rule definition |
+| ProcurementRecommendation | recommendation_id | Legacy alias / aggregate view |
 
-## PurchaseOrder / PurchaseOrderLine
+## Reference fields (not owned)
 
-See `PURCHASE-ORDER-LIFECYCLE.md`.
-
-## PurchaseReceipt / PurchaseReceiptLine
-
-Linked to PurchaseOrder; records physical receipt. Does **not** create inventory — invM receives events separately via integration contract (future).
-
-## PurchaseInvoice / PurchaseInvoiceLine
-
-Procurement cost record; finM integration deferred.
-
-## ProcurementRecommendation / ProcurementRule
-
-See `PROCUREMENT-RECOMMENDATION-MODEL.md`.
-
-## Reference Fields (not owned)
-
-| Field | Source module |
+| Field | Source |
 |---|---|
-| catalog_item_reference | mdM CanonicalIdentifier |
-| product_reference | mdM |
-| inventory_item_reference | invM (read-only signal) |
+| catalog_item_reference | mdM |
+| inventory_signal | invM (read-only) |
+
+## Detail documents
+
+URL-INTAKE-ENGINE.md, PRODUCT-MATCHING-MODEL.md, SUPPLIER-INTELLIGENCE.md, PRICE-HISTORY-MODEL.md, PURCHASE-LIFECYCLE.md, PURCHASE-SUGGESTION-MODEL.md, COST-ENGINE.md, RECIPE-MODEL.md, REPACK-MODEL.md, OERSE-KIPPIES-USE-CASES.md

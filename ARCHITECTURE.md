@@ -1,59 +1,57 @@
 # procurementManagement Architecture
 
 Date: 2026-06-08  
-Status: Architecture Foundation  
-Module: procurementManagement  
-Module code: procM  
-Governance authority: OK-Core
+Status: Production-Ready Architecture Foundation  
+Module code: procM
 
-## Summary
+## Vision
 
-procM owns procurement truth: suppliers, supplier products, purchase orders, receipts, invoices, price history, and procurement recommendations.
+```text
+URL paste → SupplierProduct → PriceHistory → SupplierComparison
+                ↓
+         PurchaseOrder → Receipt → Invoice
+                ↓
+         CostEngine → RecipeCost / RepackCost → PurchaseSuggestion
+```
 
-procM does **not** own inventory balances, product definitions, breeds, or commercial catalog data.
+procM owns **procurement knowledge**. invM owns **stock truth**. mdM owns **canonical definitions**.
+
+## Engine architecture
+
+| Layer | Responsibility |
+|---|---|
+| Intake | URL → ImportJob → SupplierProductSnapshot → SupplierProduct |
+| Matching | ProductMatch across suppliers (Teurlings vs Plein vs Bol) |
+| Intelligence | Effective unit cost, trends, comparison |
+| Purchasing | PO → receipt → invoice lifecycle |
+| Costing | Raw + packaging + label + labor + shipping = cost price |
+| Recipe | Multi-component products (VitalBoost, Verwennerij, Kuikenstartpakket) |
+| Repack | Bulk input → packaged output (25kg → 2kg bags) |
+| Suggestions | Low stock, seasonal, manual — PurchaseSuggestion |
 
 ## Principles
 
 ```text
-One module. One ownership boundary. One database/schema.
-Only own procurement data.
-Cross-module access via communicationLayer (commL) only.
-Versio-hosted target (PHP 8.3, MariaDB 10.6).
-No runtime in architecture foundation phase.
+URL-first product discovery (manual fallback always available)
+Append-only price history
+No inventory dual-write
+commL-only cross-module access
+Versio target (PHP 8.3, MariaDB 10.6)
+Design for runtime without redesign
 ```
 
-## Component Overview (planned)
+## Component map (planned runtime)
 
 ```text
-procM API (draft)
-procM domain services
-procM-owned MariaDB schema
-procM audit model
-Supplier management
-Purchase order lifecycle
-Receipt and invoice matching
-Price history engine
-Procurement recommendation engine
+procM API
+procM MariaDB schema
+ImportJob processor (future — not implemented in foundation)
+CostCalculation service
+RecipeCost / RepackCost calculators
+PurchaseSuggestion engine
+commL contract registry
 ```
-
-## Domain Map
-
-See `DOMAIN-MODEL.md`. Detailed lifecycles in `PURCHASE-ORDER-LIFECYCLE.md`, `PRICE-HISTORY-MODEL.md`, `PROCUREMENT-RECOMMENDATION-MODEL.md`.
 
 ## Boundaries
 
-| Module | Relationship |
-|---|---|
-| mdM | Product/feed/catalog **definitions** (reference only) |
-| invM | Stock levels, consumption signals (consume only) |
-| finM | Future: invoice handoff (out of MVP foundation) |
-| commL | Mandatory mediation for all consumers |
-
-## Deployment Target
-
-Versio shared hosting — aligned with OK-Core Deployment Target First (GD-2026-06-06).
-
-## References
-
-- `OerseKippies/OK-Core/architecture/MODULE-BOUNDARIES.md` — procM section
-- `OerseKippies/inventoryManagement` — boundary reference (invM owns stock, not procurement)
+See ADR-0008-PROCUREMENT-INVENTORY-BOUNDARY.md and CROSS-MODULE-INTEGRATION.md.

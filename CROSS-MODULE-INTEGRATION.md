@@ -12,7 +12,7 @@ All cross-module access via **communicationLayer (commL)**. No direct database a
 
 | Reference | Use |
 |---|---|
-| catalog_item_reference | SupplierProduct mapping |
+| catalog_item_reference | SupplierProduct mapping, Recipe output |
 | product_reference | PO line validation |
 | feed definitions | Feed purchasing categories |
 
@@ -25,7 +25,7 @@ All cross-module access via **communicationLayer (commL)**. No direct database a
 
 | Contract | Direction |
 |---|---|
-| mdM.masterData.validate.v1 | procM → mdM (validate catalog ref) |
+| mdM.masterData.validate.v1 | procM → mdM |
 
 ## invM — inventoryManagement
 
@@ -33,44 +33,42 @@ All cross-module access via **communicationLayer (commL)**. No direct database a
 
 | Signal | Use |
 |---|---|
-| Stock levels | LOW_STOCK recommendations |
+| Stock levels | PurchaseSuggestion (LOW_STOCK) |
 | Consumption (future) | Reorder planning |
 
 **procM provides (future):**
 
 | Event | Consumer |
 |---|---|
-| Purchase receipt recorded | invM creates inbound movement |
-| Cost reference | invM cost layer (future) |
+| Purchase receipt recorded | invM inbound movement |
+| CostCalculation / unit_cost | invM cost layer |
 
 **procM does not:**
 
 - Own InventoryBalance, StockBatch, StockMovement
 - Write inventory state
 
-See ADR-0004-PROCUREMENT-AND-INVENTORY-BOUNDARY.md.
+See ADR-0008-PROCUREMENT-INVENTORY-BOUNDARY.md.
 
 ## commL — communicationLayer
 
-procM registers as owner module `procurementManagement` / `procM`.
+procM registers as `procurementManagement` / `procM`.
 
-Future consumers: coPilotManagement (operator UI), invM (receipt events).
+Consumers: coPilotManagement, invM.
 
 ## copM — coPilotManagement
 
-Future read-only/procurement workspace — **not in foundation phase**.
-
-copM displays procurement data; procM owns it.
+Read/write procurement actions via commL — URL intake, PO creation, suggestions display. procM owns data.
 
 ## finM — financeManagement (future)
 
-PurchaseInvoice handoff for accounting — deferred.
+PurchaseInvoice handoff — deferred.
 
-## Reference modules
+## Unrelated modules
 
 | Module | Relationship |
 |---|---|
-| pubM | None |
-| adM | None |
+| pubM | None — publications not in procM |
+| adM | None — advertisements not in procM |
 
-Commercial catalog in copM is unrelated to procM supplier catalog mapping.
+Commercial catalog in copM is separate from procM supplier product knowledge.

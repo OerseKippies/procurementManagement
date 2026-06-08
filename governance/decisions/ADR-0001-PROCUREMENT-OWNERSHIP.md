@@ -6,27 +6,34 @@ Module: procurementManagement (procM)
 
 ## Context
 
-OK-Core requires explicit module ownership before implementation. procM is catalogued but had no repository foundation.
+OK-Core requires explicit module ownership before implementation. procM is the central procurement **knowledge** base — not merely purchasing.
 
 ## Decision
 
-procM owns all procurement and supplier purchasing data:
+procM owns:
 
 ```text
-Supplier, SupplierContact, SupplierProduct,
+Supplier, SupplierContact,
+SupplierProduct, SupplierProductImage, SupplierProductImport, SupplierProductSnapshot,
+SupplierPrice, SupplierComparison,
+ImportJob, ImportedPage,
+ProductMatch, MatchDecision, MatchRule,
 PurchaseOrder, PurchaseOrderLine,
 PurchaseReceipt, PurchaseReceiptLine,
 PurchaseInvoice, PurchaseInvoiceLine,
-PriceHistory, SupplierPrice,
-ProcurementRecommendation, ProcurementRule
+PriceHistory,
+CostModel, CostCalculation, CostComponent,
+Recipe, RecipeComponent, RecipeVersion, RecipeCost,
+RepackRecipe, RepackOutput, RepackCost,
+PurchaseSuggestion, SuggestionRule, ProcurementRecommendation
 ```
 
 ## Consequences
 
 - Single schema for procurement truth
 - invM, mdM, copM consume via commL only
-- No procurement tables in invM database
+- Cost and recipe knowledge centralized for Oerse Kippies margin analysis
 
 ## Compliance
 
-Aligned with OK-Core `architecture/MODULE-BOUNDARIES.md` procM section (extended entity list).
+Aligned with OK-Core `architecture/MODULE-BOUNDARIES.md` procM section.

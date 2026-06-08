@@ -1,4 +1,4 @@
-# ADR-0002-SUPPLIER-PRODUCT-MODEL
+# ADR-0003-SUPPLIER-PRODUCT-MODEL
 
 Date: 2026-06-08  
 Status: Accepted
@@ -15,7 +15,9 @@ Introduce **SupplierProduct** as the join between:
 Supplier (procM) + catalog_item_reference (mdM) + supplier_sku (procM)
 ```
 
-Purchase order lines reference **SupplierProduct**, not raw mdM records directly.
+Extended with SupplierProductImage, SupplierProductImport, SupplierProductSnapshot for URL intake.
+
+Purchase order lines reference **SupplierProduct**, not raw mdM records.
 
 ## Consequences
 
@@ -25,4 +27,5 @@ Purchase order lines reference **SupplierProduct**, not raw mdM records directly
 
 ## Alternatives rejected
 
-- Store supplier SKU in invM — violates boundary (invM owns stock, not procurement catalog)
+- Store supplier SKU in invM — violates boundary
+- Duplicate Product entity in procM — violates mdM ownership

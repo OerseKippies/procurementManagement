@@ -13,10 +13,11 @@ Check procM documentation against OK-Core `architecture/MODULE-BOUNDARIES.md` an
 | Check | Result |
 |---|---|
 | No inventory balance ownership | PASS |
-| No product/breed ownership | PASS |
+| No product/breed/animal ownership | PASS |
 | No advertisement/publication ownership | PASS |
-| Supplier data owned by procM | PASS |
-| ADR-0004 inventory boundary explicit | PASS |
+| Supplier and purchase data owned by procM | PASS |
+| ADR-0008 inventory boundary explicit | PASS |
+| Recipe/repack cost in procM not invM | PASS |
 
 ## Violations
 
