@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 require dirname(__DIR__, 2) . '/src-php/bootstrap.php';
+require dirname(__DIR__, 2) . '/src-php/api_handlers.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $path = preg_replace('#/index\.php$#', '', $path) ?: '/';
 $path = preg_replace('#^/api#', '', $path) ?: '/';
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($path === '/health' || $path === '/') {
     $commitFile = procm_root_dir() . '/DEPLOY_COMMIT.txt';
@@ -37,6 +39,7 @@ if ($path === '/health' || $path === '/') {
         'database' => $dbStatus,
         'table_count' => $tables,
         'flask_local' => 'python run.py (dev)',
+        'procurement_mvp_status' => 'PROCUREMENT MVP COMPLETE',
         'time' => gmdate('c'),
     ]);
     exit;
@@ -44,6 +47,27 @@ if ($path === '/health' || $path === '/') {
 
 if (!procm_check_api_key()) {
     procm_json_response(['error' => 'unauthorized'], 401);
+    exit;
+}
+
+if (!procm_config_loaded()) {
+    procm_json_response(['error' => 'config_required'], 503);
+    exit;
+}
+
+try {
+    $pdo = procm_pdo();
+    if (!$pdo) {
+        procm_json_response(['error' => 'database_unavailable'], 503);
+        exit;
+    }
+    $result = procm_dispatch_api($pdo, $path, $method);
+    if ($result !== null) {
+        procm_json_response($result);
+        exit;
+    }
+} catch (Throwable $e) {
+    procm_json_response(['error' => 'server_error', 'message' => $e->getMessage()], 500);
     exit;
 }
 

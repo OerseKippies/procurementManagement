@@ -25,6 +25,7 @@ $pdo->exec(
 
 $migrations = [
     '001_procM_core_schema' => '001_procM_core_schema.sql',
+    '002_procM_business_schema' => '002_procM_business_schema.sql',
 ];
 
 foreach ($migrations as $id => $file) {

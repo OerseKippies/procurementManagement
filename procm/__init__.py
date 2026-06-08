@@ -8,6 +8,7 @@ from flask import Flask
 
 from procm import config
 from procm.db import get_connection, init_db
+from procm.api_routes import api_bp
 from procm.routes import bp
 from procm.seed import seed_business_extensions, seed_if_empty
 
@@ -31,4 +32,5 @@ def create_app(test_config: dict | None = None) -> Flask:
         conn.close()
 
     app.register_blueprint(bp)
+    app.register_blueprint(api_bp)
     return app

@@ -3,7 +3,7 @@
 Date: 2026-06-08  
 Repository: OerseKippies/procurementManagement  
 Module code: procM  
-Status: **Complete Business Edition**  
+Status: **PROCUREMENT MVP COMPLETE** (post-go-live freeze)  
 Governance: OK-Core
 
 ## Purpose
@@ -25,16 +25,23 @@ python run.py
 python -m pytest tests/ -v --cov=procm
 ```
 
-27 tests — MVP + business edition (monitoring, forecasts, reports, invoice import).
+44 tests — MVP + business edition + Co-Pilot consumption API.
 
 ## Seed data
 
-On first run the app creates `data/procm.sqlite3` and seeds:
+**Production (MariaDB):**
 
-- Suppliers: Teurlings, Plein, Bol, Scharrelpluimvee, Olba
-- Feed & supplies (Start & Grow, Legkorrel, Maagkiezel, …)
-- Recipes: VitalBoost Start, Tamme Kuikenmix, Wormenmix, Kuikenstartpakket
-- Repack examples: 25 kg → 2 kg, Maagkiezel → 500 g
+```bash
+mysql nol_module_procM < SEED-SUPPLIERS.sql
+mysql nol_module_procM < SEED-PRODUCTS.sql
+```
+
+**Local (SQLite):** On first run the app creates `data/procm.sqlite3` and seeds suppliers, feed, supplements, packaging, recipes, and repack examples.
+
+## Co-Pilot integration
+
+Consumption API: `COPILOT-INTEGRATION.md`  
+Dashboard feed: `GET /api/copilot/dashboard`
 
 ## Documentation
 
@@ -76,4 +83,4 @@ bash scripts/deploy_procm_versio.sh
 
 ## Phase
 
-Runtime MVP — local Flask + SQLite. Not OK-Core approved until governance review.
+Post-go-live stabilization complete. See `REVIEW-PROCM-POSTGO-LIVE.md`.
